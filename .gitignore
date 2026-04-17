@@ -7,3 +7,5 @@ data/processed/
 # python cache 
 __pycache__/
 
+# raw data (optional rule)
+data/raw/*.csv
