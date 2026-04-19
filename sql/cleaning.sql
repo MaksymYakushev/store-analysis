@@ -1,8 +1,0 @@
-SELECT
-	*
-FROM store;
-
-SELECT
-	COUNT(DISTINCT "Row ID")
-FROM store;
-
