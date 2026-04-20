@@ -2,7 +2,7 @@
  * File:    store_eda.sql
  * Purpose: Exploratory Data Analysis — store table
  * Author:  Maksym Yakushev
- * Date:    2026-04-19
+ * Date:    2026-04-20
  ************************************************************/
 
 
@@ -12,7 +12,8 @@
 
 SELECT
 	*
-FROM store;
+FROM store
+LIMIT 10;
 
 
 -- ============================================================
@@ -164,5 +165,80 @@ ORDER BY
 	, distinct_value;
 
 
+-- ============================================================
+-- 6. NULLS CHECK
+-- ============================================================
+
+SELECT
+	COUNT(*) FILTER(WHERE row_id IS NULL) AS row_id_null
+	, COUNT(*) FILTER(WHERE order_id IS NULL) AS order_id_null
+	, COUNT(*) FILTER(WHERE order_date IS NULL) AS order_date_null
+	, COUNT(*) FILTER(WHERE ship_date IS NULL) AS ship_date_null
+	, COUNT(*) FILTER(WHERE ship_mode IS NULL) AS ship_mode_null
+	, COUNT(*) FILTER(WHERE customer_id IS NULL) AS customer_id_null
+	, COUNT(*) FILTER(WHERE customer_name IS NULL) AS customer_name_null
+	, COUNT(*) FILTER(WHERE segment IS NULL) AS segment_null
+	, COUNT(*) FILTER(WHERE country IS NULL) AS country_null
+	, COUNT(*) FILTER(WHERE city IS NULL) AS city_null
+	, COUNT(*) FILTER(WHERE state IS NULL) AS state_null
+	, COUNT(*) FILTER(WHERE postal_code IS NULL) AS postal_code_null
+	, COUNT(*) FILTER(WHERE region IS NULL) AS region_null
+	, COUNT(*) FILTER(WHERE product_id IS NULL) AS product_id_null
+	, COUNT(*) FILTER(WHERE category IS NULL) AS category_null
+	, COUNT(*) FILTER(WHERE sub_category IS NULL) AS sub_category_null
+	, COUNT(*) FILTER(WHERE product_name IS NULL) AS product_name_null
+	, COUNT(*) FILTER(WHERE sales IS NULL) AS sales_null
+	, COUNT(*) FILTER(WHERE quantity IS NULL) AS quantity_null
+	, COUNT(*) FILTER(WHERE discount IS NULL) AS discount_null
+	, COUNT(*) FILTER(WHERE profit IS NULL) AS profit_null
+FROM store;
+
+
+-- ============================================================
+-- 7. DUBLICSTS CHECK
+-- ============================================================
+
+SELECT
+	order_id
+	, product_id 
+	, COUNT(*) AS cnt
+FROM store
+GROUP BY 
+	order_id
+	, product_id 
+HAVING 	
+	COUNT(*) > 1;
+
+
+-- ============================================================
+-- 8. BUSINESS METRICS CHECK
+-- ============================================================
+
+SELECT
+	category
+	, COUNT(*) AS cnt
+	, SUM(sales) AS total_sales
+	, SUM(profit) AS total_profit
+FROM store
+GROUP BY 
+	category
+ORDER BY 
+	total_sales DESC;
+
+
+-- ============================================================
+-- 9. SHIPPING DELAY
+-- ============================================================
+
+SELECT
+	AVG(ship_date - order_date) AS avg_shipping_days
+	, MIN(ship_date - order_date) AS min_shipping_days
+	, MAX(ship_date - order_date) AS max_shipping_days
+FROM store;
+
+SELECT
+	SUM(CASE WHEN ship_date - order_date = 0 THEN 1 ELSE 0 END) AS cnt_when_zero
+	, SUM(CASE WHEN ship_mode = 'Same Day' THEN 1 ELSE 0 END) AS cnt_same_day
+FROM store;
 
 
